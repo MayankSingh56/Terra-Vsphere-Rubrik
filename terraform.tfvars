@@ -1,6 +1,6 @@
 vsphere_user     = "administrator@vsphere.local"
-vsphere_password = "Root$12345"
-vsphere_server   = "10.161.117.168"
+vsphere_password = "changeme"
+vsphere_server   = "ip"
 
 datacenter = "Datacenter"
 cluster    = "Cluster1"
