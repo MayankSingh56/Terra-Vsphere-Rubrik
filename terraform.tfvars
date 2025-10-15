@@ -1,14 +1,14 @@
 vsphere_user     = "administrator@vsphere.local"
-vsphere_password = "YourPasswordHere"
-vsphere_server   = "vcenter.example.com"
+vsphere_password = "Root$12345"
+vsphere_server   = "10.161.117.168"
 
 datacenter = "Datacenter"
 cluster    = "Cluster1"
-datastore  = "Datastore1"
+datastore  = "datastore1"
 network    = "VM Network"
 
 vm_name     = "pg-db01"
-vm_template = "rhel9-template"
+vm_template = "sample_testing_rhel09_postgres"
 
 guest_os_type        = "rhel9"
 postgres_version     = "17"

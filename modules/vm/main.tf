@@ -47,11 +47,11 @@ resource "vsphere_virtual_machine" "vm" {
 
   provisioner "file" {
     source      = "${path.module}/../../scripts/bootstrap.sh"
-    destination = "/tmp/bootstrap.sh"
+    destination = "/root/bootstrap.sh"
 
     connection {
       type     = "ssh"
-      user     = "cloud-user"
+      user     = "root"
       password = "ChangeMe"
       host     = self.default_ip_address
     }
@@ -59,12 +59,15 @@ resource "vsphere_virtual_machine" "vm" {
 
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /tmp/bootstrap.sh",
-      "sudo /tmp/bootstrap.sh ${var.guest_os_type} ${var.postgres_distribution} ${var.postgres_version}"
+     
+"cat /root/bootstrap.sh",  # Debug: show script content
+  "chmod +x /root/bootstrap.sh",
+  "sudo /root/bootstrap.sh ${var.guest_os_type} ${var.postgres_distribution} ${var.postgres_version}"
+
     ]
     connection {
       type     = "ssh"
-      user     = "cloud-user"
+      user     = "root"
       password = "ChangeMe"
       host     = self.default_ip_address
     }
