@@ -158,24 +158,7 @@ locals {
   vsphere_user     = data.vault_generic_secret.vsphere.data["username"]
   vsphere_password = data.vault_generic_secret.vsphere.data["password"]
 }
-```
-
-### 2. SSH Key Management
-```bash
-# Generate SSH key pair
-ssh-keygen -t ed25519 -f ~/.ssh/terraform-vm -C "terraform-automation"
-
-# Add to SSH agent
-ssh-add ~/.ssh/terraform-vm
-```
-
-### 3. Network Security
-```bash
-# Configure firewall rules (example for RHEL)
-sudo firewall-cmd --permanent --add-service=postgresql
-sudo firewall-cmd --permanent --add-service=ssh
-sudo firewall-cmd --reload
-```
+'''
 
 ---
 
@@ -185,7 +168,7 @@ sudo firewall-cmd --reload
 ```bash
 # Clone repository
 git clone <repository-url>
-cd terraform-vm-postgres-enterprise
+cd terraform repo-name
 
 # Initialize Terraform
 terraform init
@@ -195,26 +178,7 @@ terraform validate
 terraform fmt -check
 ```
 
-### 2. Pre-commit Hooks Setup
-```bash
-# Install pre-commit
-pip install pre-commit
 
-# Create .pre-commit-config.yaml
-cat > .pre-commit-config.yaml << EOF
-repos:
-  - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.83.5
-    hooks:
-      - id: terraform_fmt
-      - id: terraform_validate
-      - id: terraform_tflint
-      - id: terraform_checkov
-EOF
-
-# Install hooks
-pre-commit install
-```
 
 ### 3. Configuration Management
 
@@ -269,31 +233,7 @@ tflint --init
 tflint
 ```
 
-### 2. Post-deployment Validation
-```bash
-#!/bin/bash
-# validate-deployment.sh
-VM_IP=$(terraform output -raw vm_ip)
 
-# Test SSH connectivity
-ssh -o ConnectTimeout=10 cloud-user@$VM_IP "echo 'SSH OK'"
-
-# Test PostgreSQL
-ssh cloud-user@$VM_IP "psql --version"
-ssh cloud-user@$VM_IP "sudo systemctl status postgresql-17"
-
-# Test NFS client
-ssh cloud-user@$VM_IP "sudo systemctl status nfs-utils.service"
-```
-
-### 3. Automated Testing Framework
-```bash
-# Install Terratest (Go required)
-go mod init terraform-test
-go get github.com/gruntwork-io/terratest/modules/terraform
-
-# Create test file: test/terraform_test.go
-```
 
 ---
 
@@ -389,8 +329,7 @@ terraform console
 # Check VM network configuration
 ssh -v cloud-user@$VM_IP
 
-# Verify cloud-init completion
-ssh cloud-user@$VM_IP "sudo cloud-init status"
+
 ```
 
 #### 4. PostgreSQL Installation Issues
@@ -456,14 +395,5 @@ terraform apply -var-file="environments/dev.tfvars"
 
 ---
 
-## Support & Contacts
-
-- **Infrastructure Team**: infra-team@company.com
-- **Security Team**: security@company.com
-- **On-call Support**: +1-xxx-xxx-xxxx
-- **Documentation**: https://wiki.company.com/terraform
-
----
-
-*Last Updated: $(date)*
+*Last Updated: $(10-16-2025)*
 *Version: 1.0*
