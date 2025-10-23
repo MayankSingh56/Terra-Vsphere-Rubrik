@@ -1,5 +1,11 @@
 module "vm" {
-  source = "./modules/vm"
+  for_each = var.vms
+  source   = "./modules/vm"
+ 
+  vm_name      = each.key
+  vm_cpu       = each.value.cpu
+  vm_memory    = each.value.memory
+  vm_disk_size = each.value.disk_gb
 
   vsphere_user        = var.vsphere_user
   vsphere_password    = var.vsphere_password
@@ -8,10 +14,9 @@ module "vm" {
   cluster             = var.cluster
   datastore           = var.datastore
   network             = var.network
-  vm_name             = var.vm_name
+  
   vm_template         = var.vm_template
-  vm_cpu              = var.vm_cpu
-  vm_memory           = var.vm_memory
+  
   guest_os_type       = var.guest_os_type
   postgres_version    = var.postgres_version
   postgres_distribution = var.postgres_distribution

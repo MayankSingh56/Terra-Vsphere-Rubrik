@@ -68,3 +68,8 @@ variable "postgres_distribution" {
     description = "PostgreSQL distribution"
     type        = string
 }
+
+variable "vm_disk_size" {
+    description = "Size of the VM disk in GB"
+    type        = number
+}

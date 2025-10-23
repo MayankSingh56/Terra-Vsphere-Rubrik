@@ -1,4 +1,4 @@
-output "vm_ip" {
-    value = module.vm.vm_ip
-    description = "The IP address of the VM."
+output "vm_ips" {
+  value = 
+  { for k, v in module.vm : k => v.vm_ip }
 }

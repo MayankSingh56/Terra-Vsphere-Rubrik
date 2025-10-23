@@ -5,6 +5,9 @@ OS=$1
 DISTRO=$2
 VERSION=$3
 
+LOGFILE="/root/bootstrap1.log"
+exec > "$LOGFILE" 2>&1
+
 echo "🔁 Retrying DNS resolution for PostgreSQL repo..."
 for i in {1..5}; do
   if nslookup download.postgresql.org; then
@@ -22,13 +25,18 @@ for i in {1..5}; do
     echo "⏳ DNS resolution failed, retrying in 5s..."
     sleep 5
   fi
+
+  if [ "$i" -eq 5 ]; then
+    echo "❌ PostgreSQL repo is not reachable after retries. Falling back to RHEL base PostgreSQL."
+    DISTRO="rhel-base"
+  fi
 done
 
 echo "🔄 Checking if system is registered..."
 if subscription-manager identity &>/dev/null; then
   echo "🔄 Refreshing Red Hat subscription..."
   timeout 60s subscription-manager refresh || echo "⚠️ Refresh timed out or failed."
-  
+
   echo "🔍 Checking subscription status..."
   if subscription-manager status | grep -q "Simple Content Access"; then
     echo "✅ Simple Content Access is enabled. Proceeding with installation."
@@ -49,13 +57,12 @@ dnf clean all
 echo "⬆️ Updating system..."
 dnf update -y
 
-echo "Installing PostgreSQL $VERSION ($DISTRO) on $OS"
+echo "📦 Installing PostgreSQL $VERSION ($DISTRO) on $OS"
 
 if [[ "$OS" == "rhel9" ]]; then
   sudo dnf -qy module disable postgresql
 
   if [[ "$DISTRO" == "community" ]]; then
-    # Add PostgreSQL Yum repository if not already installed
     if ! rpm -q pgdg-redhat-repo >/dev/null 2>&1; then
       sudo dnf install -y https://download.postgresql.org/pub/repos/yum/${VERSION}/redhat/rhel-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
       sudo dnf clean all
@@ -78,6 +85,12 @@ if [[ "$OS" == "rhel9" ]]; then
     sudo /usr/edb/pge${VERSION}/bin/edb-pge-${VERSION}-setup initdb
     sudo systemctl enable edb-pge-${VERSION}
     sudo systemctl start edb-pge-${VERSION}
+
+  elif [[ "$DISTRO" == "rhel-base" ]]; then
+    sudo dnf install -y postgresql-server
+    sudo postgresql-setup --initdb
+    sudo systemctl enable postgresql
+    sudo systemctl start postgresql
   fi
 
 elif [[ "$OS" == "debian12" ]]; then
@@ -100,7 +113,7 @@ elif [[ "$OS" == "debian12" ]]; then
   fi
 fi
 
-# Install NFS client
+echo "📦 Installing NFS client..."
 if [[ "$OS" == "rhel9" ]]; then
   sudo dnf install -y nfs-utils
   sudo systemctl enable nfs-client.target || true
@@ -112,4 +125,5 @@ elif [[ "$OS" == "debian12" ]]; then
   sudo systemctl start nfs-client.target || true
 fi
 
-psql --version || true
+echo "🔍 Verifying PostgreSQL installation..."
+psql --version || echo "⚠️ PostgreSQL not found in PATH"

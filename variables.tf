@@ -36,14 +36,12 @@ variable "vm_template" {
     type = string
 }
 
-variable "vm_cpu" {
-    type    = number
-    default = 2
-}
-
-variable "vm_memory" {
-    type    = number
-    default = 4096
+variable "vms" {
+  type = map(object({
+    cpu     = number
+    memory  = number
+    disk_gb = number
+  }))
 }
 
 variable "guest_os_type" {
