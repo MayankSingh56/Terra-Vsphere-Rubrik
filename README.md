@@ -1,5 +1,7 @@
 # Terraform VM + PostgreSQL Deployment (Enterprise Ready)
 
+# Python automation script added in main machine to automate the terraform process.
+
 Automates deployment of a VM on vSphere and installs PostgreSQL.
 
 ## Features
